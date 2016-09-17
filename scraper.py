@@ -11,6 +11,9 @@ class SongScraper:
         
     def get_videos(self):
         serial_page = self.find_serial_page(self.serial_name)
+        if serial_page is None:
+            print('Cannot find serial')
+            return
         seasons = self.get_seasons(serial_page)
         episodes = self.get_episodes(seasons)
         songs = self.get_songs(episodes)
@@ -19,6 +22,7 @@ class SongScraper:
         self.download_song_videos(video_links)
 
     def find_serial_page(self, serial_title):
+        print('Finding serial...')
         serial_title = serial_title.replace(' ', '+')
         html_data = requests.get(self.homepage).text
         soup = BeautifulSoup(html_data, 'html.parser')
@@ -30,6 +34,7 @@ class SongScraper:
         return None
 
     def get_seasons(self, serial_url):
+        print('Retreiving seasons...')
         season_urls = []
         serial_page_html_data = requests.get(serial_url).text
         soup = BeautifulSoup(serial_page_html_data, 'html.parser')
@@ -41,6 +46,7 @@ class SongScraper:
         return season_urls
 
     def get_episodes(self, seasons_urls):
+        print('Getting episodes...')
         all_episodes = set()
         for season_url in seasons_urls:
             season_html_data = requests.get(season_url).text
@@ -53,6 +59,7 @@ class SongScraper:
         return list(all_episodes)
 
     def get_songs(self, all_episodes):
+        print('Reading song titles...')
         all_song_titles = []
         all_song_artists = []
         for episode in all_episodes:
@@ -68,6 +75,7 @@ class SongScraper:
         return title_artist_dictionary
 
     def songs_to_yt_search_links(self, all_songs):
+        print('Searching for songs on youtube...')
         all_links = []
         for artist, title in all_songs.items():
             new_link = 'https://www.youtube.com/results?search_query=' + artist + ' ' + title
@@ -75,6 +83,7 @@ class SongScraper:
         return all_links
 
     def search_to_video_links(self, search_links):
+        print('Saving link...')
         all_video_links = []
         for link in search_links:
             search_page_html_data = requests.get(link).text
