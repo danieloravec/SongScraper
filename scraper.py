@@ -103,4 +103,3 @@ class SongScraper:
         if url is not None and '#' not in url:
             return True
         return False
-
